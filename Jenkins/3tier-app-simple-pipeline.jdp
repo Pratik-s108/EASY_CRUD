@@ -43,9 +43,19 @@ pipeline {
                     }
                 }
             }
+            stage('eks-cluster'){
+                steps{
+                    sh '''cd Jenkins
+                        terraform init
+                        terraform plan
+                        terraform apply --auto-approve'''
+                    echo 'app is deployed on k8s'
+                }
+            }
             stage('simple-deploy'){
                 steps{
-                    sh '''kubectl apply -f simple-deploy/'''
+                    sh '''aws eks update-kubeconfig --region ap-south-1 --name My-cluster
+                    kubectl apply -f simple-deploy/'''
                     echo 'app is deployed on k8s'
                 }
             }
